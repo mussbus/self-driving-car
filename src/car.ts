@@ -1,5 +1,7 @@
 import Controls from "./controls";
 
+const turn_speed = 0.05;
+
 export default class Car {
   x: number;
   y: number;
@@ -39,12 +41,12 @@ export default class Car {
     if (this.controls.forward) this.speed += this.acceleration;
     if (this.controls.reverse) this.speed -= this.acceleration;
     var change: number = 0;
-    if (this.controls.left) change = 0.03;
-    if (this.controls.right) change = -0.03;
+    if (this.controls.left) change = turn_speed;
+    if (this.controls.right) change = -turn_speed;
     if (this.speed < 0) change *= -1;
     this.direction += change;
     // this.direction = this.direction % Math.PI;
-    if (Math.abs(this.direction) < 0.03) this.direction = 0;
+    if (Math.abs(this.direction) < turn_speed) this.direction = 0;
 
     if (this.speed > this.max_speed) this.speed = this.max_speed;
     if (this.speed < -this.max_speed / 2) this.speed = -this.max_speed / 2;
