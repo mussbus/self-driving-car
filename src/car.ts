@@ -1,15 +1,24 @@
 import Controls from "./controls";
 import Sensor from "./sensor";
 import { Point } from "./helpers";
+import * as Constants from "./constants";
 
 const turn_speed = 0.05;
 
-export default class Car {
+export class CarControl {
+  speed: number;
+  
+  constructor(speed: number) {
+    this.speed = speed;
+  }
+}
+
+export class Car {
   point: Point;
   width: number;
   height: number;
   color: string;
-  controls: Controls;
+  controls: Controls | null;
   speed: number;
   max_speed: number;
   acceleration: number;
@@ -17,15 +26,15 @@ export default class Car {
   direction: number;
   sensor: Sensor;
 
-  constructor(x: number, y: number, width: number, height: number) {
+  constructor(x: number, y: number, width: number, height: number, car_control: CarControl | null, ) {
     this.point = new Point(x, y);
     this.width = width;
     this.height = height;
     this.color = "red";
     this.sensor = new Sensor(this);
-    this.controls = new Controls();
-    this.speed = 0;
-    this.max_speed = 10;
+    this.controls = car_control ? null : new Controls();
+    this.speed = car_control ? car_control.speed : 0;
+    this.max_speed = Constants.MAX_SPEED;
     this.acceleration = 0.2;
     this.friction = 0.03;
     this.direction = 0;
@@ -40,31 +49,39 @@ export default class Car {
     ctx.fillStyle = this.color;
     ctx.fill();
     ctx.restore();
+    if (!this.controls) return;
     this.sensor.draw(ctx);
   }
 
   update(road_borders: Point[][]) {
     this.#move();
+    if (!this.controls) return;
     this.sensor.update(road_borders);
   }
 
   #move() {
-    if (this.controls.forward) this.speed += this.acceleration;
-    if (this.controls.reverse) this.speed -= this.acceleration;
-    var change: number = 0;
-    if (this.controls.left) change = turn_speed;
-    if (this.controls.right) change = -turn_speed;
-    if (this.speed < 0) change *= -1;
-    this.direction += change;
-    if (Math.abs(this.direction) < turn_speed) this.direction = 0;
+    if (!this.controls) {
+      // this.point.x -= Math.sin(this.direction) * this.speed;
+      this.point.y -= this.speed;
+    }
+    else {
+      if (this.controls.forward) this.speed += this.acceleration;
+      if (this.controls.reverse) this.speed -= this.acceleration;
+      var change: number = 0;
+      if (this.controls.left) change = turn_speed;
+      if (this.controls.right) change = -turn_speed;
+      if (this.speed < 0) change *= -1;
+      this.direction += change;
+      if (Math.abs(this.direction) < turn_speed) this.direction = 0;
 
-    if (this.speed > this.max_speed) this.speed = this.max_speed;
-    if (this.speed < -this.max_speed / 2) this.speed = -this.max_speed / 2;
-    if (this.speed > 0) this.speed -= this.friction;
-    if (this.speed < 0) this.speed += this.friction;
-    if (Math.abs(this.speed) < 0.025) this.speed = 0;
+      if (this.speed > this.max_speed) this.speed = this.max_speed;
+      if (this.speed < -this.max_speed / 2) this.speed = -this.max_speed / 2;
+      if (this.speed > 0) this.speed -= this.friction;
+      if (this.speed < 0) this.speed += this.friction;
+      if (Math.abs(this.speed) < 0.025) this.speed = 0;
 
-    this.point.x -= Math.sin(this.direction) * this.speed;
-    this.point.y -= Math.cos(this.direction) * this.speed;
+      this.point.x -= Math.sin(this.direction) * this.speed;
+      this.point.y -= Math.cos(this.direction) * this.speed;
+    }
   }
 }

@@ -1,21 +1,55 @@
-import Car from "./car";
+import { Car, CarControl } from "./car";
+import * as Constants from "./constants";
 import Road from "./road";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
+const CAR_WIDTH = 40;
+const CAR_HEIGHT = 80;
 
 const road = new Road(canvas.width / 2, canvas.width * 0.9, 16);
-const car = new Car(road.getLaneCenter(7), 500, 40, 80);
+const driver = new Car(road.getLaneCenter(7), 500, CAR_WIDTH, 80, null);
+const cars: Car[] = [];
 
-function loop() {
+let spawnTimer = 0;
+const SPAWN_INTERVAL = 1_000; // ms
+let lastTime = performance.now();
+
+function loop(time: number) {
+  if (cars.length < Constants.MAX_CARS) {
+    const dt = time - lastTime;
+    lastTime = time;
+
+    spawnTimer += dt;
+
+    if (spawnTimer >= SPAWN_INTERVAL) {
+      spawnTimer = 0;
+
+      cars.push(
+        new Car(
+          road.getLaneCenter(Math.floor(Math.random() * road.lane_count)),
+          driver.point.y - 500,
+          CAR_WIDTH,
+          CAR_HEIGHT,
+          new CarControl(Math.floor(Math.random() * Constants.SPEED_RANGE) + Constants.MIN_SPEED),
+        ),
+      );
+    }
+  }
+
   canvas.height = window.innerHeight;
 
-  ctx.translate(0, -car.point.y + canvas.height * 0.8);
+  ctx.translate(0, -driver.point.y + canvas.height * 0.8);
 
   road.draw(ctx);
-  car.update(road.borders);
-  car.draw(ctx);
+  driver.update(road.borders);
+  driver.draw(ctx);
+
+  for (const car of cars) {
+    car.update(road.borders);
+    car.draw(ctx);
+  }
 
   requestAnimationFrame(loop);
 }
 
-loop();
+requestAnimationFrame(loop);

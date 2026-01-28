@@ -1,4 +1,4 @@
-import Car from "./car";
+import { Car } from "./car";
 import { lerp, intersect, Hit, Point } from "./helpers";
 export default class Sensor {
   car: Car;
@@ -40,7 +40,7 @@ export default class Sensor {
       ctx.moveTo(ray[0].x, ray[0].y);
       ctx.lineTo(end.point.x, end.point.y);
       ctx.stroke();
-      
+
       ctx.strokeStyle = "black";
       ctx.beginPath();
       ctx.moveTo(ray[1].x, ray[1].y);
