@@ -7,7 +7,7 @@ const turn_speed = 0.05;
 
 export class CarControl {
   speed: number;
-  
+
   constructor(speed: number) {
     this.speed = speed;
   }
@@ -25,8 +25,15 @@ export class Car {
   friction: number;
   direction: number;
   sensor: Sensor;
+  borders: Point[][];
 
-  constructor(x: number, y: number, width: number, height: number, car_control: CarControl | null, ) {
+  constructor(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    car_control: CarControl | null,
+  ) {
     this.point = new Point(x, y);
     this.width = width;
     this.height = height;
@@ -38,6 +45,24 @@ export class Car {
     this.acceleration = 0.2;
     this.friction = 0.03;
     this.direction = 0;
+
+    const half_width = width / 2;
+    const half_height = height / 2;
+    const left = this.point.x - half_width;
+    const right = this.point.x + half_width;
+    const top = this.point.y - half_height;
+    const bottom = this.point.y + half_height;
+
+    const top_left = new Point(left, top);
+    const top_right = new Point(right, top);
+    const bottom_left = new Point(left, bottom);
+    const bottom_right = new Point(right, bottom);
+    this.borders = [
+      [top_left, top_right],
+      [top_right, bottom_right],
+      [bottom_right, bottom_left],
+      [bottom_left, top_left],
+    ];
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -53,18 +78,18 @@ export class Car {
     this.sensor.draw(ctx);
   }
 
-  update(road_borders: Point[][]) {
+  update(road_borders: Point[][], car_borders: Point[][]) {
     this.#move();
+    this.update_borders();
     if (!this.controls) return;
-    this.sensor.update(road_borders);
+    this.sensor.update([...road_borders, ...car_borders]);
   }
 
   #move() {
     if (!this.controls) {
       // this.point.x -= Math.sin(this.direction) * this.speed;
       this.point.y -= this.speed;
-    }
-    else {
+    } else {
       if (this.controls.forward) this.speed += this.acceleration;
       if (this.controls.reverse) this.speed -= this.acceleration;
       var change: number = 0;
@@ -83,5 +108,25 @@ export class Car {
       this.point.x -= Math.sin(this.direction) * this.speed;
       this.point.y -= Math.cos(this.direction) * this.speed;
     }
+  }
+  
+  update_borders() {
+    const half_width = this.width / 2;
+    const half_height = this.height / 2;
+    const left = this.point.x - half_width;
+    const right = this.point.x + half_width;
+    const top = this.point.y - half_height;
+    const bottom = this.point.y + half_height;
+
+    const top_left = new Point(left, top);
+    const top_right = new Point(right, top);
+    const bottom_left = new Point(left, bottom);
+    const bottom_right = new Point(right, bottom);
+    this.borders = [
+      [top_left, top_right],
+      [top_right, bottom_right],
+      [bottom_right, bottom_left],
+      [bottom_left, top_left],
+    ];
   }
 }

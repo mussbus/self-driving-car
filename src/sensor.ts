@@ -17,9 +17,9 @@ export default class Sensor {
     this.readings = [];
   }
 
-  update(road_borders: Point[][]) {
+  update(borders: Point[][]) {
     this.#castRays();
-    this.#readings(road_borders);
+    this.#readings(borders);
   }
 
   draw(ctx: CanvasRenderingContext2D) {

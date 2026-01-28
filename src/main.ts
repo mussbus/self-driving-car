@@ -1,4 +1,5 @@
 import { Car, CarControl } from "./car";
+import { Point } from "./helpers";
 import * as Constants from "./constants";
 import Road from "./road";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -30,7 +31,10 @@ function loop(time: number) {
           driver.point.y - 500,
           CAR_WIDTH,
           CAR_HEIGHT,
-          new CarControl(Math.floor(Math.random() * Constants.SPEED_RANGE) + Constants.MIN_SPEED),
+          new CarControl(
+            Math.floor(Math.random() * Constants.SPEED_RANGE) +
+              Constants.MIN_SPEED,
+          ),
         ),
       );
     }
@@ -41,13 +45,16 @@ function loop(time: number) {
   ctx.translate(0, -driver.point.y + canvas.height * 0.8);
 
   road.draw(ctx);
-  driver.update(road.borders);
-  driver.draw(ctx);
 
   for (const car of cars) {
-    car.update(road.borders);
+    const other_cars = cars.filter((c) => c !== car);
+    const other_borders: Point[][] = other_cars.flatMap((c) => c.borders);
+    car.update(road.borders, [...driver.borders, ...other_borders]);
     car.draw(ctx);
   }
+  const all_cars: Point[][] = cars.flatMap((car) => car.borders);
+  driver.update(road.borders, all_cars);
+  driver.draw(ctx);
 
   requestAnimationFrame(loop);
 }
