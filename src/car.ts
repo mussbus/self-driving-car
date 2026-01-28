@@ -1,4 +1,6 @@
 import Controls from "./controls";
+import Sensor from "./sensor";
+import { Point } from "./helpers";
 
 const turn_speed = 0.05;
 
@@ -14,6 +16,7 @@ export default class Car {
   acceleration: number;
   friction: number;
   direction: number;
+  sensor: Sensor;
 
   constructor(x: number, y: number, width: number, height: number) {
     this.x = x;
@@ -21,6 +24,7 @@ export default class Car {
     this.width = width;
     this.height = height;
     this.color = "red";
+    this.sensor = new Sensor(this);
     this.controls = new Controls();
     this.speed = 0;
     this.max_speed = 10;
@@ -33,11 +37,20 @@ export default class Car {
     ctx.save();
     ctx.translate(this.x, this.y);
     ctx.rotate(-this.direction);
+    ctx.beginPath();
+    ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
     ctx.fillStyle = this.color;
-    ctx.fillRect(-this.width / 2, -this.height / 2, this.width, this.height);
+    ctx.fill();
+    ctx.restore();
+    this.sensor.draw(ctx);
   }
 
-  update() {
+  update(road_borders: Point[][]) {
+    this.#move();
+    this.sensor.update(road_borders);
+  }
+
+  #move() {
     if (this.controls.forward) this.speed += this.acceleration;
     if (this.controls.reverse) this.speed -= this.acceleration;
     var change: number = 0;
@@ -45,7 +58,6 @@ export default class Car {
     if (this.controls.right) change = -turn_speed;
     if (this.speed < 0) change *= -1;
     this.direction += change;
-    // this.direction = this.direction % Math.PI;
     if (Math.abs(this.direction) < turn_speed) this.direction = 0;
 
     if (this.speed > this.max_speed) this.speed = this.max_speed;

@@ -37,33 +37,29 @@ export default class Road {
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    ctx.save();
     ctx.lineWidth = 8;
     ctx.strokeStyle = "white";
 
     ctx.setLineDash([20, 40]);
     for (let i = 1; i <= this.lane_count - 1; i++) {
-      ctx.save();
-
       const x = lerp(this.left, this.right, i / this.lane_count);
 
       ctx.beginPath();
       ctx.moveTo(x, this.top);
       ctx.lineTo(x, this.bottom);
       ctx.stroke();
-
-      ctx.restore();
     }
 
     ctx.setLineDash([]);
     for (const border of this.borders) {
       if (!border[0] || !border[1]) continue;
-      ctx.save();
       ctx.beginPath();
 
-      console.log(border[0], border[1]);
       ctx.moveTo(border[0].x, border[0].y);
       ctx.lineTo(border[1].x, border[1].y);
       ctx.stroke();
     }
+    ctx.restore();
   }
 }
