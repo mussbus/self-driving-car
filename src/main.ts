@@ -4,11 +4,9 @@ import * as Constants from "./constants";
 import Road from "./road";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
-const CAR_WIDTH = 40;
-const CAR_HEIGHT = 80;
 
 const road = new Road(canvas.width / 2, canvas.width * 0.9, 16);
-const driver = new Car(road.getLaneCenter(7), 500, CAR_WIDTH, 80, null);
+const driver = new Car(road.getLaneCenter(7), Constants.CAR_START, Constants.CAR_WIDTH, Constants.CAR_HEIGHT, null);
 const cars: Car[] = [];
 
 let spawnTimer = 0;
@@ -28,9 +26,9 @@ function loop(time: number) {
       cars.push(
         new Car(
           road.getLaneCenter(Math.floor(Math.random() * road.lane_count)),
-          driver.point.y - 500,
-          CAR_WIDTH,
-          CAR_HEIGHT,
+          driver.point.y - Constants.NEW_CAR_HEAD_START,
+          Constants.CAR_WIDTH,
+          Constants.CAR_HEIGHT,
           new CarControl(
             Math.floor(Math.random() * Constants.SPEED_RANGE) +
               Constants.MIN_SPEED,
