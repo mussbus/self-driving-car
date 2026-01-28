@@ -13,9 +13,9 @@ export function intersect(A: Point, B: Point, C: Point, D: Point) {
     if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
       return new Hit(new Point(lerp(A.x, B.x, t), lerp(A.y, B.y, t)), t);
     }
-
     return null;
   }
+  return null;
 }
 
 export class Point {

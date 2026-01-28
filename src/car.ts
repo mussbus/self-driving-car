@@ -5,8 +5,7 @@ import { Point } from "./helpers";
 const turn_speed = 0.05;
 
 export default class Car {
-  x: number;
-  y: number;
+  point: Point;
   width: number;
   height: number;
   color: string;
@@ -19,8 +18,7 @@ export default class Car {
   sensor: Sensor;
 
   constructor(x: number, y: number, width: number, height: number) {
-    this.x = x;
-    this.y = y;
+    this.point = new Point(x, y);
     this.width = width;
     this.height = height;
     this.color = "red";
@@ -35,7 +33,7 @@ export default class Car {
 
   draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
-    ctx.translate(this.x, this.y);
+    ctx.translate(this.point.x, this.point.y);
     ctx.rotate(-this.direction);
     ctx.beginPath();
     ctx.rect(-this.width / 2, -this.height / 2, this.width, this.height);
@@ -66,7 +64,7 @@ export default class Car {
     if (this.speed < 0) this.speed += this.friction;
     if (Math.abs(this.speed) < 0.025) this.speed = 0;
 
-    this.x -= Math.sin(this.direction) * this.speed;
-    this.y -= Math.cos(this.direction) * this.speed;
+    this.point.x -= Math.sin(this.direction) * this.speed;
+    this.point.y -= Math.cos(this.direction) * this.speed;
   }
 }

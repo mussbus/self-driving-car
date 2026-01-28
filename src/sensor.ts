@@ -8,7 +8,7 @@ export default class Sensor {
   ray_spread: number;
   readings: (Hit | null)[];
 
-  constructor(car: Car, ray_count: number = 25, ray_length: number = 300) {
+  constructor(car: Car, ray_count: number = 25, ray_length: number = 1000) {
     this.car = car;
     this.ray_count = ray_count;
     this.ray_length = ray_length;
@@ -35,7 +35,7 @@ export default class Sensor {
         end = reading;
       }
 
-      ctx.strokeStyle = "yellow";
+      ctx.strokeStyle = "lime";
       ctx.beginPath();
       ctx.moveTo(ray[0].x, ray[0].y);
       ctx.lineTo(end.point.x, end.point.y);
@@ -52,15 +52,15 @@ export default class Sensor {
 
   #castRays() {
     this.rays = [];
-    const start = new Point(this.car.x, this.car.y);
+    const start = new Point(this.car.point.x, this.car.point.y);
     for (let i = 0; i < this.ray_count; i++) {
       const c = this.ray_count === 1 ? 0.5 : this.ray_count - 1;
       const ray_angle =
         lerp(this.ray_spread / 2, -this.ray_spread / 2, i / c) +
         this.car.direction;
       const end = new Point(
-        this.car.x - Math.sin(ray_angle) * this.ray_length,
-        this.car.y - Math.cos(ray_angle) * this.ray_length,
+        this.car.point.x - Math.sin(ray_angle) * this.ray_length,
+        this.car.point.y - Math.cos(ray_angle) * this.ray_length,
       );
       this.rays.push([start, end]);
     }
