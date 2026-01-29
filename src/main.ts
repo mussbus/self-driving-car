@@ -4,6 +4,7 @@ import * as Constants from "./constants";
 import Road from "./road";
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
 const ctx = canvas.getContext("2d")!;
+canvas.width = 1000;
 
 const road = new Road(canvas.width / 2, canvas.width * 0.9, 16);
 const driver = new Car(road.getLaneCenter(7), Constants.CAR_START, Constants.CAR_WIDTH, Constants.CAR_HEIGHT, null);
