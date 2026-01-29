@@ -71,7 +71,7 @@ export default class Sensor {
     if (!ray[0] || !ray[1]) return null;
     for (const border of road_borders) {
       if (!border[0] || !border[1]) return null;
-      const hit = intersect(ray[0], ray[1], border[0], border[1]);
+      const hit : Hit | null = intersect(ray[0], ray[1], border[0], border[1]);
       if (hit) {
         if (!closest_hit || hit.t < closest_hit.t) closest_hit = hit;
       }
