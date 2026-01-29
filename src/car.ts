@@ -32,7 +32,7 @@ export class Car {
 		this.point = new Point(x, y);
 		this.width = width;
 		this.height = height;
-		this.color = "red";
+		this.color = car_control ? "white" : "purple";
 		this.sensor = new Sensor(this);
 		this.controls = car_control ? null : new Controls();
 		this.speed = car_control ? car_control.speed : 0;
@@ -54,7 +54,7 @@ export class Car {
 		)
 			return;
 
-		ctx.fillStyle = this.damaged ? "grey" : "red";
+		ctx.fillStyle = this.damaged ? "grey" : this.color;
 		ctx.beginPath();
 		ctx.moveTo(this.borders[0][0].x, this.borders[0][0].y);
 		ctx.lineTo(this.borders[0][1].x, this.borders[0][1].y);
@@ -68,7 +68,7 @@ export class Car {
 	update(road_borders: Point[][], car_borders: Point[][]) {
 		this.#move();
 		this.#update_borders();
-		this.damaged = this.damaged ? true : this.#assess_damage(road_borders);
+		this.damaged = this.damaged ? true : this.#assess_damage([...road_borders, ...car_borders]);
 		if (this.damaged) {
 			this.speed = 0;
 			this.controls = null;
@@ -77,12 +77,12 @@ export class Car {
 		this.sensor.update([...road_borders, ...car_borders]);
 	}
 
-	#assess_damage(road_borders: Point[][]): boolean {
-		for (const border of this.borders) {
-			if (!border[0] || !border[1]) return true;
-			for (const road_border of road_borders) {
-				if (!road_border[0] || !road_border[1]) return true;
-				if (intersect(road_border[0], road_border[1], border[0], border[1])) {
+	#assess_damage(borders: Point[][]): boolean {
+		for (const car_border of this.borders) {
+			if (!car_border[0] || !car_border[1]) return true;
+			for (const border of borders) {
+				if (!border[0] || !border[1]) return true;
+				if (intersect(car_border[0], car_border[1], border[0], border[1])) {
 					return true;
 				}
 			}
