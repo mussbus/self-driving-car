@@ -1,4 +1,5 @@
 import Controls from "./controls";
+import { NeuralNetwork } from "./network";
 import Sensor from "./sensor";
 import { intersect, Point, Hit } from "./helpers";
 import * as Constants from "./constants";
@@ -25,6 +26,7 @@ export class Car {
 	sensor: Sensor;
 	borders: Point[][];
 	damaged: boolean;
+	neural_network: NeuralNetwork | null;
 
 	constructor(x: number, y: number, width: number, height: number, car_control: CarControl | null) {
 		this.point = new Point(x, y);
@@ -40,6 +42,10 @@ export class Car {
 		this.direction = 0;
 		this.borders = [];
 		this.damaged = false;
+
+		if (!car_control) this.neural_network = new NeuralNetwork([this.sensor.ray_count, 12, 4]);
+		else this.neural_network = null;
+
 		this.#update_borders();
 	}
 
@@ -73,6 +79,13 @@ export class Car {
 		}
 		if (!this.controls) return;
 		this.sensor.update([...road_borders, ...car_borders]);
+		if (!this.neural_network) return;
+		const t_values = this.sensor.readings.map((s) => (s == null ? 0 : 1 - s.t));
+		const outputs = NeuralNetwork.feed_forward(t_values, this.neural_network);
+		this.controls.forward = outputs[0] == 1;
+		this.controls.left = outputs[1] == 1;
+		this.controls.right = outputs[2] == 1;
+		this.controls.reverse = outputs[3] == 1;
 	}
 
 	#assess_damage(borders: Point[][]): boolean {
@@ -90,7 +103,6 @@ export class Car {
 
 	#move() {
 		if (!this.controls) {
-			// this.point.x -= Math.sin(this.direction) * this.speed;
 			this.point.y -= this.speed;
 		} else {
 			if (this.controls.forward) this.speed += this.acceleration;
