@@ -3,8 +3,6 @@ import Sensor from "./sensor";
 import { intersect, Point, Hit } from "./helpers";
 import * as Constants from "./constants";
 
-const turn_speed = 0.05;
-
 export class CarControl {
 	speed: number;
 
@@ -38,7 +36,7 @@ export class Car {
 		this.speed = car_control ? car_control.speed : 0;
 		this.max_speed = Constants.MAX_SPEED;
 		this.acceleration = 0.2;
-		this.friction = 0.03;
+		this.friction = Constants.FRICTION;
 		this.direction = 0;
 		this.borders = [];
 		this.damaged = false;
@@ -98,11 +96,11 @@ export class Car {
 			if (this.controls.forward) this.speed += this.acceleration;
 			if (this.controls.reverse) this.speed -= this.acceleration;
 			var change: number = 0;
-			if (this.controls.left) change = turn_speed;
-			if (this.controls.right) change = -turn_speed;
+			if (this.controls.left) change = Constants.TURN_SPEED;
+			if (this.controls.right) change = -Constants.TURN_SPEED;
 			if (this.speed < 0) change *= -1;
 			this.direction += change;
-			if (Math.abs(this.direction) < turn_speed) this.direction = 0;
+			if (Math.abs(this.direction) < Constants.TURN_SPEED) this.direction = 0;
 
 			if (this.speed > this.max_speed) this.speed = this.max_speed;
 			if (this.speed < -this.max_speed / 2) this.speed = -this.max_speed / 2;
