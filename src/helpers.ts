@@ -37,3 +37,28 @@ export class Hit {
     this.t = t;
   }
 }
+
+export function resizeCanvas(
+  canvas: HTMLCanvasElement,
+  width: number,
+  height: number,
+) {
+  const dpr = window.devicePixelRatio || 1;
+
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
+
+  const ctx = canvas.getContext("2d")!;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+}
+
+export function get_RGBA(value: number) {
+  const R = value < 0 ? 0 : 255;
+  const G = R;
+  const B = value > 0 ? 0 : 255;
+  const A = Math.abs(value);
+  return "rgba(" + R + "," + G + "," + B + "," + A + ")";
+}

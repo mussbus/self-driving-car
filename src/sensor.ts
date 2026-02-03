@@ -1,5 +1,6 @@
 import { Car } from "./car";
 import { lerp, intersect, Hit, Point } from "./helpers";
+import * as Constants from './constants';
 export default class Sensor {
 	car: Car;
 	ray_count: number;
@@ -8,11 +9,11 @@ export default class Sensor {
 	ray_spread: number;
 	readings: (Hit | null)[];
 
-	constructor(car: Car, ray_count: number = 25, ray_length: number = 1000) {
+	constructor(car: Car, ray_count: number = Constants.RAY_COUNT, ray_length: number = Constants.RAY_LENGTH, ray_spread: number = Constants.RAY_SPREAD) {
 		this.car = car;
 		this.ray_count = ray_count;
 		this.ray_length = ray_length;
-		this.ray_spread = Math.PI;
+		this.ray_spread = ray_spread;
 		this.rays = [];
 		this.readings = [];
 	}

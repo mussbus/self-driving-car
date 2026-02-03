@@ -5,10 +5,12 @@ import { intersect, Point, Hit } from "./helpers";
 import * as Constants from "./constants";
 
 export class CarControl {
-	speed: number;
+  speed: number;
+  neural_network: NeuralNetwork | null;
 
-	constructor(speed: number) {
-		this.speed = speed;
+	constructor(speed: number, neural_network: NeuralNetwork | null) {
+    this.speed = speed;
+    this.neural_network = neural_network;
 	}
 }
 
@@ -28,24 +30,21 @@ export class Car {
 	damaged: boolean;
 	neural_network: NeuralNetwork | null;
 
-	constructor(x: number, y: number, width: number, height: number, car_control: CarControl | null) {
+	constructor(x: number, y: number, width: number, height: number, car_control: CarControl) {
 		this.point = new Point(x, y);
 		this.width = width;
 		this.height = height;
-		this.color = car_control ? "white" : "purple";
+		this.color = !car_control.neural_network ? "white" : "purple";
 		this.sensor = new Sensor(this);
-		this.controls = car_control ? null : new Controls();
-		this.speed = car_control ? car_control.speed : 0;
+		this.controls = !car_control.neural_network ? null : new Controls();
+		this.speed = car_control.speed;
 		this.max_speed = Constants.MAX_SPEED;
 		this.acceleration = 0.2;
 		this.friction = Constants.FRICTION;
 		this.direction = 0;
 		this.borders = [];
 		this.damaged = false;
-
-		if (!car_control) this.neural_network = new NeuralNetwork([this.sensor.ray_count, 12, 4]);
-		else this.neural_network = null;
-
+		this.neural_network = car_control.neural_network;
 		this.#update_borders();
 	}
 
@@ -65,9 +64,13 @@ export class Car {
 		ctx.lineTo(this.borders[2][0].x, this.borders[2][0].y);
 		ctx.lineTo(this.borders[2][1].x, this.borders[2][1].y);
 		ctx.fill();
-		if (!this.controls) return;
+    if (!this.controls) return;
 		this.sensor.draw(ctx);
-	}
+  }
+	
+  set_neural_network(neural_network: NeuralNetwork) {
+    this.neural_network = neural_network;
+  }
 
 	update(road_borders: Point[][], car_borders: Point[][]) {
 		this.#move();

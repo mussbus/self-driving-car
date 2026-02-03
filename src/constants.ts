@@ -1,12 +1,20 @@
 const fps_multiplier = 4;
 
-export const MAX_SPEED = 30 / fps_multiplier;
-export const MIN_SPEED = 15 / fps_multiplier;
-export const TURN_SPEED = .03 / fps_multiplier;
-export const FRICTION = .04 / fps_multiplier;
-export const MAX_CARS = 50;
-export const SPEED_RANGE = MAX_SPEED - MIN_SPEED;
-export const NEW_CAR_HEAD_START = 600;
+export const MAX_SPEED = 50 / fps_multiplier;
+export const MAX_AI_SPEED = 30 / fps_multiplier;
+export const MIN_SPEED = 5 / fps_multiplier;
+export const TURN_SPEED = 0.03 / fps_multiplier;
+export const FRICTION = 0.04 / fps_multiplier;
+export const MAX_CARS = 1000;
+export const TEST_CARS = 50;
+export const SPEED_RANGE = MAX_AI_SPEED - MIN_SPEED;
+export const NEW_CAR_HEAD_START = 500;
 export const CAR_START = 0;
 export const CAR_WIDTH = 40;
 export const CAR_HEIGHT = 80;
+export const MUTATE = .25;
+export const SPAWN_INTERVAL = 750;
+export const UPDATE_BEST_CAR_INTERVAL = 2000;
+export const RAY_COUNT = 10;
+export const RAY_SPREAD = Math.PI / 2;
+export const RAY_LENGTH = 500;
